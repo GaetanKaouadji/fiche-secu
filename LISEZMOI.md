@@ -27,7 +27,7 @@ L'application fonctionne entièrement dans le téléphone. GitHub sert uniquemen
 ## 3. Déposer sur GitHub
 
 1. Dans le dépôt, cliquez sur le lien **uploading an existing file**.
-2. Glissez **tout le contenu** de ce dossier (`index.html`, `sw.js`, `manifest.webmanifest`, `jspdf.umd.min.js`, le dossier `icons`) **ainsi que** le fichier `app.bin.json` de l'étape 2.
+2. Glissez **tout le contenu** de ce dossier (`index.html`, `sw.js`, `manifest.webmanifest`, `jspdf.umd.min.js`, les 4 images **ainsi que** le fichier `app.bin.json` de l'étape 2.
 3. Cliquez sur **Commit changes**.
 4. Ouvrez **Settings**, puis **Pages**. Source : **Deploy from a branch**. Branch : **main**, dossier **/ (root)**. Cliquez sur **Save**.
 5. Après une ou deux minutes, l'app est en ligne à `https://NOMDUCOMPTE.github.io/`.

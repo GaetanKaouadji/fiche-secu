@@ -1,17 +1,17 @@
 /* Plongée Loisirs Chalon — service worker : ouverture de l'application sans réseau.
    Si vous modifiez index.html, sw.js, les icônes ou le manifeste, augmentez VERSION.
    Une simple mise à jour de app.bin.json (changement de code, nouvelle version) n'en a pas besoin. */
-const VERSION = 'plc-fiche-secu-v1';
+const VERSION = 'plc-fiche-secu-v2';
 const ASSETS = [
   './',
   './index.html',
   './app.bin.json',
   './jspdf.umd.min.js',
   './manifest.webmanifest',
-  './icons/logo.jpg',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './logo.jpg',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', event => {
