@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0474e0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fiche sécu PLC">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Fiches de sécurité · Plongée Loisirs Chalon</title>
+<!-- © Plongée Loisirs Chalon (PLC71). Usage réservé au club. Reproduction et diffusion interdites.
+     Le contenu de l'application est chiffré : il ne s'ouvre qu'avec le code d'accès du club. -->
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#14202e;-webkit-text-size-adjust:100%}
+body{min-height:100vh;background:linear-gradient(160deg,#0466c8 0%,#0a86d6 40%,#2fc3e0 75%,#bdeef7 100%);
+  display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 20px)}
+.box{width:100%;max-width:400px;background:#fff;border-radius:18px;padding:26px 22px 20px;text-align:center;box-shadow:0 10px 30px rgba(3,50,110,.3)}
+.box img{width:132px;height:132px;object-fit:contain}
+h1{margin:8px 0 2px;font-size:27px;font-weight:400;color:#1631d0;letter-spacing:-.01em}
+.sub{margin:0 0 20px;color:#4f6274;font-size:15px}
+label{display:block;text-align:left;font-size:13px;color:#4f6274;font-weight:500;margin-bottom:4px}
+input{width:100%;min-height:50px;font:inherit;font-size:17px;padding:10px 12px;border:1px solid #aebccc;border-radius:10px;-webkit-appearance:none;appearance:none}
+input:focus{outline:2px solid #0474e0;border-color:#0474e0}
+button{width:100%;min-height:54px;margin-top:14px;border:0;border-radius:11px;background:#e3570b;color:#fff;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6}
+.msg{min-height:22px;margin-top:12px;font-size:14px;color:#b71c1c}
+.msg.info{color:#4f6274}
+.copy{margin-top:14px;font-size:11.5px;color:#7a8a99}
+</style>
+</head>
+<body>
+<div class="box">
+  <img src="icons/logo.jpg" alt="Plongée Loisirs Chalon">
+  <h1>Plongée Loisirs Chalon</h1>
+  <p class="sub">Fiches de sécurité</p>
+  <form id="f" autocomplete="off">
+    <label for="code">Code d'accès du club</label>
+    <input id="code" type="password" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+    <button id="go" type="submit">Entrer</button>
+  </form>
+  <div id="msg" class="msg info">Chargement…</div>
+  <div class="copy">© Plongée Loisirs Chalon (PLC71) · Usage réservé au club</div>
+</div>
+<script>
+'use strict';
+(function(){
+  const CLE = 'plc_cle_v1';
+  const msg = document.getElementById('msg');
+  const form = document.getElementById('f');
+  const input = document.getElementById('code');
+  const go = document.getElementById('go');
+  const setMsg = (t, info) => { msg.textContent = t; msg.className = 'msg' + (info ? ' info' : ''); };
+  const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const toB64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+  let pkg = null;
+
+  if('serviceWorker' in navigator && location.protocol === 'https:'){
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+  if(!(window.crypto && crypto.subtle)){
+    setMsg("Ce navigateur ne peut pas ouvrir l'application. Utilisez Safari ou Chrome à jour, via l'adresse https du club.");
+    go.disabled = true; return;
+  }
+
+  async function derive(code, salt, iter){
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveBits']);
+    return crypto.subtle.deriveBits({name:'PBKDF2', salt:b64(salt), iterations:iter, hash:'SHA-256'}, base, 256);
+  }
+  async function decrypt(raw){
+    const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['decrypt']);
+    const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:b64(pkg.iv)}, key, b64(pkg.ct));
+    return new TextDecoder().decode(pt);
+  }
+  function launch(html){
+    document.open();
+    document.write(html);
+    document.close();
+  }
+  function remember(code, raw){
+    try { localStorage.setItem(CLE, JSON.stringify({c:code, s:pkg.salt, k:toB64(raw)})); } catch(e){}
+  }
+  async function openWith(code, rawB64){
+    const raw = rawB64 ? b64(rawB64).buffer : await derive(code, pkg.salt, pkg.iter);
+    const html = await decrypt(raw);
+    remember(code, raw);
+    launch(html);
+  }
+
+  async function start(){
+    try {
+      const r = await fetch('app.bin.json', {cache:'no-cache'});
+      if(!r.ok) throw new Error('http ' + r.status);
+      pkg = await r.json();
+    } catch(e){
+      setMsg("Impossible de charger l'application. À la première ouverture, une connexion est nécessaire.");
+      go.disabled = true; return;
+    }
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(CLE) || 'null'); } catch(e){}
+    if(saved && saved.c){
+      setMsg('Ouverture…', true);
+      try { await openWith(saved.c, saved.s === pkg.salt ? saved.k : null); return; }
+      catch(e){
+        try { localStorage.removeItem(CLE); } catch(_){}
+        setMsg("Le code d'accès du club a changé. Saisissez le nouveau code.");
+        input.focus(); return;
+      }
+    }
+    setMsg('', true);
+    input.focus();
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const code = input.value.trim();
+    if(!code || !pkg) return;
+    go.disabled = true; setMsg('Vérification…', true);
+    try { await openWith(code, null); }
+    catch(err){ go.disabled = false; setMsg('Code incorrect.'); input.select(); }
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>
