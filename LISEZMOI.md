@@ -62,4 +62,11 @@ Dès qu'un téléphone se connecte au réseau, l'ancien code cesse de fonctionne
 - **Verrou d'adresse** : une copie remise en ligne ailleurs affiche « Application réservée ».
 - **Code brouillé, nom et logo du club intégrés, mention de droits** : ils dissuadent la réutilisation et le maquillage de l'app.
 - **Limite** : une personne qui connaît le code, sait programmer et y consacre du temps pourrait contourner ces protections. On ne peut pas l'empêcher totalement pour un programme qui tourne sur un téléphone.
-- **Règles de contrôle** : elles suivent le Code du sport tel qu'il était rédigé avant l'arrêté du 17 octobre 2025. Elles doivent être validées par un moniteur du club, et les qualifications Nitrox ne sont pas contrôlées.
+- **Règles de contrôle** : elles suivent le Code du sport en vigueur en novembre 2026 (y compris l'arrêté du 17 octobre 2025 sur l'autonomie des mineurs et celui du 24 novembre 2025 sur les directeurs de plongée) et les règles « jeunes plongeurs » de la FFESSM. Elles contrôlent le nitrox (PN, PN-C), la plongée technique (enseignement), les baptêmes et l'âge des jeunes plongeurs. Le trimix et l'héliox ne sont pas contrôlés. **Tous les contrôles sont des alertes : aucun n'empêche de clôturer une fiche**, le directeur de plongée décide. La PpO₂ maximale du nitrox (1,4, 1,5 ou 1,6 bar) se règle par défaut dans Réglages et pour chaque palanquée. Faites-les valider par un moniteur du club : l'app aide le directeur de plongée, qui reste responsable.
+
+## Mettre à jour l'application (version 3, novembre 2026)
+
+1. Ouvrez la **nouvelle** version de `NE-PAS-PUBLIER_outil-publication-PLC71.html` et refaites l'étape 2 (même e-mail, même compte GitHub ; vous pouvez garder le même code). Un nouveau `app.bin.json` se télécharge.
+2. Sur GitHub, cliquez sur **Add file**, puis **Upload files**, et déposez en une seule fois : `index.html`, `sw.js`, `manifest.webmanifest`, `LISEZMOI.md` et le nouveau `app.bin.json`. Cliquez sur **Commit changes**.
+3. Sur chaque téléphone, fermez complètement l'app puis rouvrez-la avec du réseau (deux fois si l'ancienne version s'affiche encore). Les plongeurs et les fiches déjà saisis sont conservés.
+4. Complétez dans l'écran Plongeurs les aptitudes nitrox (PN, PN-C) et l'âge des jeunes plongeurs, puis renvoyez la liste aux directeurs de plongée (Réglages).

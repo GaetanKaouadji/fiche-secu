@@ -1,7 +1,7 @@
 /* Plongée Loisirs Chalon — service worker : ouverture de l'application sans réseau.
    Si vous modifiez index.html, sw.js, les icônes ou le manifeste, augmentez VERSION.
    Une simple mise à jour de app.bin.json (changement de code, nouvelle version) n'en a pas besoin. */
-const VERSION = 'plc-fiche-secu-v2';
+const VERSION = 'plc-fiche-secu-v3';
 const ASSETS = [
   './',
   './index.html',
